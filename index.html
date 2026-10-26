@@ -1,30 +1,489 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>بوابة الأنظمة والبرامج</title>
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=6">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=6">
-<link rel="manifest" href="./manifest.webmanifest?v=7">
-<meta name="theme-color" content="#087f7b">
-<meta name="apple-mobile-web-app-title" content="بوابة الأنظمة والبرامج">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<style>
-  *,*::before,*::after{box-sizing:border-box}
-  html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#f3f7f7}
-  body{font-family:Tahoma,Arial,sans-serif}
-  #portal{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:#fff}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102a43">
+  <meta name="description" content="حاسبة تقديرية لفواتير المياه والكهرباء السكنية في السعودية وفق تعرفة 2027.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="حاسبة المياه والطاقة">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
+  <title>حاسبة المياه والطاقة</title>
+  <style>
+    :root {--navy:#102a43;--navy2:#173f62;--gold:#d2a85a;--blue:#177ba7;--sky:#e9f4fb;--txt:#213448;--muted:#65788b;--border:#e0e7ee;--shadow:0 12px 30px rgba(16,42,67,.09);--bg:#f3f6fa;--white:#fff}
+    * {box-sizing:border-box}
+    html {scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body {margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6}
+    button,input,select {font:inherit}
+    button,select {cursor:pointer}
+    button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible {outline:3px solid #54a6d3;outline-offset:3px}
+    .container {width:min(100%,1050px);margin-inline:auto;padding-inline:18px}
+    .top {background:linear-gradient(125deg,#102a43 0%,#1a4769 70%,#14678a 100%);color:white;position:relative;overflow:hidden;padding:35px 0 48px;border-bottom:4px solid var(--gold)}
+    .top:after {content:"";position:absolute;width:320px;height:320px;left:-80px;top:-145px;border:2px solid #ffffff1a;border-radius:50%;box-shadow:0 0 0 44px #ffffff06,0 0 0 95px #ffffff05;pointer-events:none}
+    .brand {display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+    .brand-logo {width:78px;height:78px;border:2px solid #f5d78caa;border-radius:22px;box-shadow:0 6px 17px #00182a55;object-fit:cover;display:block;flex:none;background:#102a43}
+    .head-text h1 {font-size:clamp(24px,4vw,35px);margin:0 0 2px;font-weight:800;line-height:1.3}
+    .head-text p {margin:0;font-size:14px;color:#e4edf4}
+    .tag {display:inline-flex;margin-top:15px;border:1px solid #dbba7e66;border-radius:100px;padding:4px 12px;background:#d2a85a22;font-weight:600;font-size:12px;color:#f8e4b3}
+    main {position:relative;margin-top:-25px;padding-bottom:25px}
+    .overview {background:#fff;border:1px solid #e2e9f0;border-radius:22px;box-shadow:var(--shadow);padding:22px;margin-bottom:18px;position:relative}
+    .eyebrow {margin:0;font-size:13px;color:var(--muted);font-weight:600}
+    .money {font-variant-numeric:tabular-nums;font-weight:850;letter-spacing:-.5px}
+    .big-total {font-size:clamp(30px,5vw,43px);color:var(--navy);line-height:1.3;margin-top:3px}
+    .currency {font-size:.43em;letter-spacing:0;font-weight:650;color:var(--muted)}
+    .total-grid {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+    .mini-total {border-radius:13px;padding:13px 15px;background:#ecf7fc;display:flex;align-items:center;gap:10px}
+    .mini-total.energy {background:#fff6e7}
+    .mini-icon {width:38px;height:38px;border-radius:12px;background:#d9f0fa;color:#157ca7;display:grid;place-items:center;flex:none;font-size:20px}
+    .energy .mini-icon {background:#fff0c9;color:#ac7618}
+    .mini-total b {font-size:20px;display:block;line-height:1.3;font-variant-numeric:tabular-nums}
+    .mini-total span {font-size:12px;color:var(--muted)}
+    .switchlinks {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+    .switchlinks a {color:var(--navy2);background:white;border:1px solid #dce6ed;text-decoration:none;padding:9px 15px;border-radius:12px;font-size:14px;font-weight:750}
+    .cards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;align-items:start}
+    .panel {background:white;border:1px solid var(--border);border-radius:20px;box-shadow:0 5px 18px #142f4710;overflow:hidden;scroll-margin-top:12px}
+    .panel-head {padding:20px 21px 16px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--border)}
+    .panel-icon {width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:26px;flex:none}
+    .water .panel-icon {background:#e8f5fb;color:#1483b4}
+    .electricity .panel-icon {background:#fff5e3;color:#b57e1f}
+    .panel-head h2 {font-size:19px;margin:0 0 1px;line-height:1.4}
+    .panel-head p {font-size:12px;margin:0;color:var(--muted)}
+    .panel-body {padding:18px 21px 22px}
+    .field {margin-bottom:17px}
+    .field > label,.field-label {display:block;font-size:14px;font-weight:750;margin-bottom:8px}
+    .control {border:1px solid #cad7e2;border-radius:11px;min-height:44px;background:#fff;width:100%;padding:8px 13px;color:var(--navy);font-weight:650}
+    .control:focus {border-color:var(--blue)}
+    .pill-note {display:inline-flex;color:var(--muted);font-size:12px;margin-top:6px}
+    .range-top {display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+    .value-row {display:flex;align-items:center;gap:7px;justify-content:flex-end}
+    .num {width:96px;text-align:center;direction:ltr;background:#f9fbfc}
+    .unit {font-size:13px;color:var(--muted);white-space:nowrap}
+    input[type="range"] {width:100%;height:30px;accent-color:var(--blue);padding:0;margin:3px 0;cursor:pointer;touch-action:pan-y}
+    .electricity input[type="range"] {accent-color:#b9862b}
+    .range-ends {display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+    .inline-group {display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .check {display:flex;align-items:center;gap:10px;background:#f5f8fa;border:1px solid #e5eaee;border-radius:12px;padding:10px 11px;font-size:14px;font-weight:600;cursor:pointer}
+    .check input {width:19px;height:19px;accent-color:#1f86a8}
+    .bracket {font-size:12px;color:#526e83;margin-top:6px}
+    .breakdown {margin-top:19px;padding-top:15px;border-top:1px dashed #d6e1e7}
+    .breakdown h3 {margin:0 0 10px;font-size:14px;color:var(--navy)}
+    .line {display:flex;justify-content:space-between;gap:10px;margin:7px 0;font-size:13px}
+    .line .label {color:#607589}
+    .line strong {font-variant-numeric:tabular-nums;white-space:nowrap}
+    .line.border-top {margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .panel-total {display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f0f7fb;border-radius:13px;margin-top:14px;padding:12px}
+    .electricity .panel-total {background:#fff7e9}
+    .panel-total b {font-size:22px;color:var(--navy);font-variant-numeric:tabular-nums}
+    .panel-total span {font-size:12px;color:#526d81;font-weight:700}
+    /* المقارنة بين التعرفتين — دون تغيير تفاصيل الحسابات الأصلية */
+    .comparison {margin-top:14px;padding:13px 14px;border:1px solid #dae5ee;background:#fbfdff;border-radius:13px}
+    .comparison h4 {font-size:13px;font-weight:800;color:var(--navy);text-align:center;margin:0 0 9px}
+    .comparison-row {display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0;font-size:12px;text-align:initial}
+    .comparison-row span {color:#5a6f82;flex:1;min-width:0}
+    .comparison-row strong {font-variant-numeric:tabular-nums;white-space:nowrap;direction:ltr;unicode-bidi:isolate;text-align:left;color:var(--navy)}
+    .comparison-row.delta {border-top:1px solid #dce6ec;padding-top:9px;margin-top:11px;font-weight:750}
+    .comparison-row.delta span {color:var(--navy)}
+    .comparison-row.delta strong {color:var(--navy);font-size:16px}
+    /* لون الزيادة الشهرية يحاكي لون شريط الاستهلاك في كل حاسبة. */
+    .water .comparison-row.delta span,
+    .water .comparison-row.delta strong {color:var(--blue)}
+    .electricity .comparison-row.delta span,
+    .electricity .comparison-row.delta strong {color:#94620f}
+    .comparison-note {display:block;text-align:center;color:#667b8e;font-size:11px;line-height:1.8;margin-top:8px}
+    .overview-compare {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+    .overview-compare-item {border:1px solid #e1e8ef;border-radius:12px;padding:10px 9px;text-align:center;background:#f9fbfd;min-width:0}
+    .overview-compare-item.increase {border-color:#efd9be;background:#fff9f0}
+    .overview-compare-item span {display:block;color:#627489;font-size:12px;line-height:1.5}
+    .overview-compare-item b {display:block;color:var(--navy);font-size:17px;line-height:1.5;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .overview-compare-item.increase b {color:#9e5411}
+    @media (max-width:380px) { .overview-compare-item b {font-size:15px}.comparison-row {gap:5px;font-size:11px}.comparison-row.delta strong {font-size:14px} }
+    .disclaimer {background:#fff0f0;border:2px solid #d93030;border-right:6px solid #c41919;border-radius:16px;padding:16px 19px;margin:0 0 17px;color:#941919;box-shadow:0 2px 8px #a7131314}
+    .disclaimer h2 {margin:0 0 6px;font-size:17px;color:#ac1111;display:flex;gap:8px;align-items:center}
+    .disclaimer p {margin:0;font-size:13px;font-weight:650;line-height:1.9;color:#921616}
+    .disclaimer strong {color:#9c0909}
+    .info {background:white;border:1px solid var(--border);border-radius:17px;padding:18px 21px;margin-top:17px}
+    .info h3 {margin:0 0 5px;font-size:16px}
+    .info p {margin:12px 0;color:#556c7f;font-size:13px}
+    .info a {color:#0e6f9f;text-underline-offset:3px}
+    .actions {display:flex;justify-content:center;gap:9px;margin-top:15px;flex-wrap:wrap}
+    .action {border:1px solid #b7c9d8;background:#fff;color:var(--navy);font-weight:750;border-radius:12px;padding:11px 16px}
+    .action.primary {background:var(--navy);color:white;border-color:var(--navy)}
+    .footer {text-align:center;padding:20px 10px 35px;color:#536a7e;font-size:13px}
+    .footer .rights {display:block;color:var(--navy);font-size:14px;font-weight:700;margin-bottom:4px}
+    .footer .en {direction:ltr;unicode-bidi:embed;display:block;font-size:12px;letter-spacing:.1px}
+    .footer .app-version {display:block;margin-top:7px;color:#607689;font-size:11px;font-variant-numeric:tabular-nums}
+    .footer .footer-rule {height:2px;width:90px;margin:0 auto 13px;background:linear-gradient(90deg,#1b6183,var(--gold));border-radius:3px}
+    .toast {position:fixed;z-index:100;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,15px);background:#122f4a;color:#fff;padding:11px 17px;border-radius:12px;box-shadow:var(--shadow);font-size:13px;opacity:0;pointer-events:none;transition:.22s}
+    .toast.show {opacity:1;transform:translate(-50%,0)}
+    /* توسيط عناصر الواجهة، مع إبقاء صفوف تفاصيل الفواتير مقروءة من اليمين لليسار */
+    .top .container,.overview {text-align:center}
+    .brand {justify-content:center}
+    .head-text {text-align:center}
+    .mini-total {flex-direction:column;justify-content:center;text-align:center;min-width:0;gap:7px;min-height:105px}
+    .mini-total > div:last-child {min-width:0;width:100%}
+    .mini-total b {overflow-wrap:anywhere}
+    .mini-icon {margin-inline:auto}
+    .switchlinks {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;width:100%;margin:16px 0}
+    .switchlinks a {display:flex;align-items:center;justify-content:center;text-align:center;gap:7px;min-width:0;min-height:49px;padding:9px 7px;line-height:1.4;white-space:normal}
+    .switchlinks .nav-icon {flex:none;line-height:1;font-size:17px}
+    .switchlinks .nav-short {display:none}
+    .panel-head {flex-direction:column;justify-content:center;text-align:center;gap:8px}
+    .panel-head > div:last-child {width:100%}
+    .panel-body .field > label,.panel-body .field-label,.breakdown h3 {text-align:center}
+    .panel-body .control {text-align:center;text-align-last:center}
+    .panel-body .control[type=number] {text-align:center}
+    .pill-note {display:block;text-align:center;line-height:1.7}
+    .range-top {flex-direction:column;align-items:center;justify-content:center;gap:7px}
+    .range-top .field-label {margin-bottom:0}
+    .value-row {justify-content:center}
+    .inline-group > div {min-width:0;text-align:center}
+    .check {justify-content:center}
+    .bracket {text-align:center;line-height:1.8}
+    .info {text-align:center}
+    .info p {line-height:1.95}
+    .disclaimer {text-align:center}
+    .disclaimer h2 {justify-content:center;text-align:center;gap:9px;line-height:1.5;margin-bottom:13px}
+    .disclaimer-alert-icon {display:inline-grid;place-items:center;flex:none}
+    .disclaimer-body {display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:14px;max-width:850px;margin:0 auto}
+    /* محاذاة النصوص الطويلة بأسلوب ضبط Word: يضبط الأسطر الكاملة، ويبقى السطر الأخير طبيعيًا في اتجاه العربية. */
+    .disclaimer-body p {width:100%;margin:0;text-align:justify;text-align-last:start;text-justify:inter-word;text-wrap:wrap;line-height:2;overflow-wrap:break-word}
+    .info p {text-align:justify;text-align-last:start;text-justify:inter-word;text-wrap:wrap;overflow-wrap:break-word}
+    /* تفاصيل الفواتير تبقى بمحاذاة محاسبية ثابتة ولا تتأثر بالتوسيط العام */
+    .breakdown .line,.breakdown .panel-total {text-align:initial}
+    .breakdown .line strong,.breakdown .panel-total b {direction:ltr;unicode-bidi:isolate;text-align:left}
+    @media (max-width:600px) {
+      .switchlinks {gap:6px}
+      .switchlinks a {gap:4px;padding:8px 4px;font-size:12px;min-height:48px}
+      .switchlinks .nav-full {display:none}
+      .switchlinks .nav-short {display:inline}
+      .switchlinks .nav-icon {font-size:15px}
+      .disclaimer-body {gap:14px}
+      .disclaimer h2 {font-size:16px}
+      .disclaimer-body p {font-size:12px;line-height:1.95}
+    }
+    @media (max-width:360px) {
+      .switchlinks {gap:4px}
+      .switchlinks a {font-size:11px;padding-inline:2px;gap:3px}
+      .switchlinks .nav-icon {font-size:13px}
+    }
+    [hidden] {display:none!important}
+    @media(max-width:720px) { .top {padding:25px 0 42px}.brand-logo {width:66px;height:66px;border-radius:18px}.disclaimer {padding:13px 15px}.disclaimer p {font-size:12px}.cards {grid-template-columns:1fr}.overview {padding:18px}.container {padding-inline:13px}.mini-total {padding:12px}.mini-total b {font-size:17px}.panel-body {padding-inline:18px}.panel-head {padding-inline:18px}.big-total {font-size:36px}}
+    @media(max-width:380px) {.total-grid {gap:7px}.mini-total {gap:6px;padding:9px}.mini-icon {width:32px;height:32px}.mini-total b {font-size:15px}.head-text h1 {font-size:23px}.num {width:83px}.inline-group {gap:7px}}
+    @media print {.top {color:#102a43;background:#fff;border-bottom:2px solid #c9a05a;padding:0 0 12px}.head-text p {color:#32475a}.tag,.switchlinks,.actions,.toast,input[type="range"] {display:none!important}main {margin-top:12px}.container {width:100%}.overview,.panel,.info {box-shadow:none;break-inside:avoid}.cards {grid-template-columns:1fr 1fr}body {background:white}.footer {padding-bottom:4px}}
+    @media(prefers-reduced-motion:reduce) {html {scroll-behavior:auto}.toast {transition:none}}
+  </style>
 </head>
 <body>
-<iframe id="portal"
- src="https://script.google.com/macros/s/AKfycbzEBwgGd5GROgHou-Zb83fOLie76VlSlmkeW8XxZ5b8IkhBwbZa_J7p0dl-lmEFaA3K/exec"
- title="بوابة الأنظمة والبرامج"
- loading="eager"
- referrerpolicy="strict-origin-when-cross-origin"
- allow="clipboard-read; clipboard-write"
-></iframe>
+  <header class="top">
+    <div class="container">
+      <div class="brand">
+        <img class="brand-logo" src="./icon.svg" width="78" height="78" alt="رمز قطرة المياه الزرقاء وصاعقة الطاقة الذهبية">
+        <div class="head-text">
+          <h1>حاسبة المياه والطاقة</h1>
+          <p>احسب فواتيرك التقريبية بطريقة سهلة — نتائج غير رسمية</p>
+        </div>
+      </div>
+      <span class="tag">التعرفة السكنية الجديدة • اعتبارًا من 1 يناير 2027</span>
+    </div>
+  </header>
+  <main class="container">
+    <section class="overview" aria-live="polite" aria-atomic="true">
+      <p class="eyebrow">إجمالي الفاتورتين المتوقع شهريًا (شامل الضريبة)</p>
+      <div id="grandTotal" class="big-total money" dir="ltr">641.13 <span class="currency">ر.س</span></div>
+      <div class="total-grid">
+        <div class="mini-total"><div class="mini-icon" aria-hidden="true">💧</div><div><span>فاتورة المياه</span><b id="waterSummary" dir="ltr">101.78 ر.س</b></div></div>
+        <div class="mini-total energy"><div class="mini-icon" aria-hidden="true">⚡</div><div><span>فاتورة الكهرباء</span><b id="energySummary" dir="ltr">539.35 ر.س</b></div></div>
+      </div>
+      <div class="overview-compare" aria-label="ملخص مقارنة الفاتورتين">
+        <div class="overview-compare-item"><span>الإجمالي بالتعرفة السابقة</span><b id="grandOldTotal" dir="ltr">422.34 ر.س</b></div>
+        <div class="overview-compare-item increase"><span>إجمالي الزيادة الشهرية المتوقعة</span><b id="grandIncrease" dir="ltr">+218.79 ر.س</b></div>
+      </div>
+    </section>
+    <section id="disclaimer" class="disclaimer" aria-labelledby="disclaimerTitle">
+      <h2 id="disclaimerTitle"><span class="disclaimer-alert-icon" aria-hidden="true">⚠</span><span>تنبيه مهم – إخلاء مسؤولية</span></h2>
+      <div class="disclaimer-body">
+        <p>هذه الحاسبة <strong>مبادرة شخصية مستقلة وغير رسمية</strong>، أُعدّت باجتهاد فردي وفق فهم المطوّر للتعرفة المنشورة وقت إعدادها. جميع المخرجات <strong>تقديرية وتوضيحية فقط</strong>. قد تتضمن أخطاء في تفسير التعرفة أو البيانات أو طريقة الحساب، بما في ذلك أخطاء جوهرية قد تجعل التقديرات <strong>غير صحيحة بالكامل</strong>. لا تمثل النتائج فواتير معتمدة أو ضمانًا للمبالغ المستحقة.</p>
+        <p>لا تُغني هذه التقديرات عن الرجوع إلى الجهات المزودة للخدمة وفواتيرها الرسمية للتحقق قبل أي قرار أو التزام مالي. ولا يتحمل مطوّر الحاسبة، <strong>في الحدود التي تجيزها الأنظمة المعمول بها</strong>، مسؤولية الخسائر أو الأضرار الناتجة عن استخدام هذه التقديرات أو الاعتماد عليها.</p>
+      </div>
+    </section>
+    <nav class="switchlinks" aria-label="الانتقال بين الحاسبات">
+      <a href="#waterCard"><span class="nav-icon" aria-hidden="true">💧</span><span class="nav-full">حاسبة المياه</span><span class="nav-short">المياه</span></a>
+      <a href="#electricCard"><span class="nav-icon" aria-hidden="true">⚡</span><span class="nav-full">حاسبة الكهرباء</span><span class="nav-short">الكهرباء</span></a>
+      <a href="#sources"><span class="nav-icon" aria-hidden="true">ℹ️</span><span>التفاصيل والمصادر</span></a>
+    </nav>
+    <div class="cards">
+      <section id="waterCard" class="panel water" aria-labelledby="waterHeading">
+        <div class="panel-head"><div class="panel-icon" aria-hidden="true">💧</div><div><h2 id="waterHeading">فاتورة المياه</h2><p>المياه والصرف الصحي والرسوم الثابتة</p></div></div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="waterMeter">قطر عداد المياه (ملم)</label>
+            <select id="waterMeter" class="control">
+              <option value="15">15 ملم</option><option value="20">20 ملم</option><option value="25">25 ملم</option><option value="32">32 ملم</option><option value="40" selected>40 ملم</option><option value="50">50 ملم</option><option value="63">63 ملم</option><option value="65">65 ملم</option><option value="75">75 ملم</option><option value="80">80 ملم</option><option value="100">100 ملم</option><option value="125">125 ملم</option><option value="150">150 ملم</option><option value="200">200 ملم</option><option value="custom">مقاس آخر…</option>
+            </select>
+            <input id="waterCustom" class="control" type="number" min="1" max="1000" step="1" placeholder="اكتب قطر العداد بالملم" inputmode="numeric" aria-label="قطر عداد آخر" style="margin-top:9px" hidden>
+            <span id="waterBracket" class="pill-note">فئة الرسم الثابت: أكثر من 20 وحتى 40 ملم</span>
+          </div>
+          <div class="field">
+            <div class="range-top"><label for="waterUsage" class="field-label">الاستهلاك الشهري</label><div class="value-row"><input id="waterUsageNumber" class="control num" type="number" min="0" max="99999" step="1" inputmode="decimal" value="17" aria-label="الاستهلاك بالمتر المكعب"><span class="unit">م³</span></div></div>
+            <input id="waterUsage" type="range" min="0" max="200" step="1" value="17" aria-label="شريط استهلاك المياه">
+            <div class="range-ends"><span>0 م³</span><span>200 م³</span></div>
+          </div>
+          <div class="field inline-group">
+            <div><label for="units" class="field-label">الوحدات السكنية</label><input id="units" class="control" type="number" min="1" max="200" step="1" inputmode="numeric" value="1"></div>
+            <div><label class="field-label">خدمة الصرف الصحي</label><label class="check"><input id="sewer" type="checkbox" checked> متوفرة</label></div>
+          </div>
+          <p id="unitsNote" class="bracket" hidden>للعدادات المشتركة: احتُسب الاستهلاك على مستوى العداد الواحد؛ قد تختلف آلية توزيع الاستهلاك على الوحدات في فاتورتك الفعلية.</p>
+          <div class="breakdown">
+            <h3>تفاصيل فاتورة المياه</h3>
+            <div class="line"><span class="label">استهلاك المياه</span><strong id="waterUseCost">19.00 ر.س</strong></div>
+            <div class="line sewer-row"><span class="label">استهلاك الصرف الصحي</span><strong id="sewerUseCost">9.50 ر.س</strong></div>
+            <div class="line"><span class="label">رسم المياه الثابت</span><strong id="waterFixed">40.00 ر.س</strong></div>
+            <div class="line sewer-row"><span class="label">رسم الصرف الثابت</span><strong id="sewerFixed">20.00 ر.س</strong></div>
+            <div class="line border-top"><span class="label">ضريبة القيمة المضافة 15%</span><strong id="waterVat">13.28 ر.س</strong></div>
+            <div class="panel-total"><span>إجمالي المياه</span><b id="waterTotal">101.78 ر.س</b></div>
+            <div class="comparison" role="group" aria-label="مقارنة تعرفة المياه">
+              <h4>مقارنة فاتورة المياه</h4>
+              <div class="comparison-row"><span>بالتعرفة السابقة (حتى 2026)</span><strong id="waterOldTotal">17.54 ر.س</strong></div>
+              <div class="comparison-row"><span>بالتعرفة الجديدة (من 2027)</span><strong id="waterNewCompare">101.78 ر.س</strong></div>
+              <div class="comparison-row delta"><span id="waterDiffLabel">الزيادة الشهرية المتوقعة</span><strong id="waterIncrease">+84.24 ر.س</strong></div>
+              <small class="comparison-note" id="oldWaterNote">شامل الاستهلاك ورسم العداد السابق والضريبة.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="electricCard" class="panel electricity" aria-labelledby="electricHeading">
+        <div class="panel-head"><div class="panel-icon" aria-hidden="true">⚡</div><div><h2 id="electricHeading">فاتورة الكهرباء</h2><p>الاستهلاك وسعة القاطع والرسوم الثابتة</p></div></div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="breaker">سعة القاطع (أمبير)</label>
+            <select id="breaker" class="control">
+              <option value="20">20 أمبير</option><option value="30">30 أمبير</option><option value="40">40 أمبير</option><option value="50" selected>50 أمبير</option><option value="60">60 أمبير</option><option value="80">80 أمبير</option><option value="100">100 أمبير</option><option value="125">125 أمبير</option><option value="150">150 أمبير</option><option value="175">175 أمبير</option><option value="200">200 أمبير</option><option value="225">225 أمبير</option><option value="250">250 أمبير</option><option value="300">300 أمبير</option><option value="400">400 أمبير</option><option value="500">500 أمبير</option><option value="custom">سعة أخرى…</option>
+            </select>
+            <input id="breakerCustom" class="control" type="number" min="20" max="10000" step="1" placeholder="اكتب سعة القاطع بالأمبير" inputmode="numeric" aria-label="سعة قاطع أخرى" style="margin-top:9px" hidden>
+            <span id="breakerBracket" class="pill-note">فئة الرسم الثابت: من 20 إلى أقل من 100 أمبير</span>
+          </div>
+          <div class="field">
+            <div class="range-top"><label for="electricUsage" class="field-label">الاستهلاك الشهري</label><div class="value-row"><input id="electricUsageNumber" class="control num" type="number" min="0" max="999999" step="1" inputmode="numeric" value="1900" aria-label="استهلاك الكهرباء بالكيلوواط ساعة"><span class="unit">ك.و.س</span></div></div>
+            <input id="electricUsage" type="range" min="0" max="15000" step="10" value="1900" aria-label="شريط استهلاك الكهرباء">
+            <div class="range-ends"><span>0 ك.و.س</span><span>15,000 ك.و.س</span></div>
+          </div>
+          <div class="field"><label for="billDays">عدد أيام الفاتورة</label><input id="billDays" class="control" type="number" min="1" max="365" step="1" inputmode="numeric" value="30"><span class="pill-note">يُعدّل الرسم الثابت وفقًا لعدد الأيام مقارنةً بـ30 يومًا.</span></div>
+          <div class="breakdown">
+            <h3>تفاصيل فاتورة الكهرباء</h3>
+            <div class="line"><span class="label">حتى 6,000 ك.و.س (21 هللة)</span><strong id="elecTier1">399.00 ر.س</strong></div>
+            <div class="line"><span class="label">ما زاد عن 6,000 (33 هللة)</span><strong id="elecTier2">0.00 ر.س</strong></div>
+            <div class="line"><span class="label">الرسم الثابت للقاطع</span><strong id="elecFixed">70.00 ر.س</strong></div>
+            <div class="line border-top"><span class="label">ضريبة القيمة المضافة 15%</span><strong id="elecVat">70.35 ر.س</strong></div>
+            <div class="panel-total"><span>إجمالي الكهرباء</span><b id="elecTotal">539.35 ر.س</b></div>
+            <div class="comparison" role="group" aria-label="مقارنة تعرفة الكهرباء">
+              <h4>مقارنة فاتورة الكهرباء</h4>
+              <div class="comparison-row"><span>بالتعرفة السابقة (حتى 2026)</span><strong id="elecOldTotal">404.80 ر.س</strong></div>
+              <div class="comparison-row"><span>بالتعرفة الجديدة (من 2027)</span><strong id="elecNewCompare">539.35 ر.س</strong></div>
+              <div class="comparison-row delta"><span id="elecDiffLabel">الزيادة الشهرية المتوقعة</span><strong id="elecIncrease">+134.55 ر.س</strong></div>
+              <small class="comparison-note">تحتسب المقارنة رسوم قراءة العداد القديمة بدل الرسم الثابت الجديد.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="actions"><button type="button" id="resetBtn" class="action">استعادة القيم الافتراضية</button></div>
+    <section id="sources" class="info">
+      <h3>معلومات عن الحاسبة</h3>
+      <p>تستخدم الحاسبة <b>التعرفة السكنية السعودية الجديدة المعلن بدء تطبيقها في 1 يناير 2027</b>، وتحسب شرائح الاستهلاك تصاعديًا ورسوم العداد أو القاطع وضريبة القيمة المضافة 15%. تشمل رسوم المياه الثابتة رسم الصرف الصحي فقط عند تفعيل الخدمة، ولا تحتسبه مرتين. تعرض الحاسبة تقديرًا توضيحيًا فقط، وليس فاتورة معتمدة. قد تختلف الفاتورة الفعلية بسبب الوحدات السكنية، وتواريخ القراءة، والتسويات، ودورات الفوترة الانتقالية. ويُرجى مراجعة <a href="#disclaimer">إخلاء المسؤولية</a> أعلى الصفحة.</p>
+      <p>أُضيفت مقارنة للتعرفة السابقة (حتى 2026) والتعرفة الجديدة (من 2027)، مع عرض فرق الفاتورة على أساس <b>كمية الاستهلاك نفسها</b> وضريبة 15%. في التعرفة السابقة للمياه تُستخدم شرائح 0.10 و1 و3 و4 و6 ريالات للمتر المكعب ورسوم خدمة العداد السابقة (5 أو 10 أو 15 ريالًا)، وفي الكهرباء تُستخدم شريحتا 18 و30 هللة ورسوم قراءة وصيانة العداد السابقة بحسب القاطع. لا تمثل المقارنة الزيادة المؤكدة في فاتورتك الفعلية. عند وجود وحدات سكنية متعددة تُقدَّر شرائح المياه السابقة بتوزيع الاستهلاك بالتساوي بينها؛ وقد تختلف النتيجة عن الفوترة الحقيقية.</p>
+      <p>روابط التعرفة: <a href="https://www.nwc.com.sa/AR/Pages/AdujstedWaterandWastewaterServicesRate.aspx" target="_blank" rel="noopener noreferrer">شركة المياه الوطنية</a> · <a href="https://www.se.com.sa/ar-SA/ourservices/columnc/bills-and-consumption/consumptiontariffs/ct2/ct2" target="_blank" rel="noopener noreferrer">السعودية للطاقة</a></p>
+      <p>مراجع التعرفة السابقة: <a href="https://www.nwc.com.sa/AR/HousingSector/Pages/%D8%AF%D9%84%D9%8A%D9%84%20%D8%AA%D9%82%D8%AF%D9%8A%D9%85%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D9%85%D9%8A%D8%A7%D9%87%20%D9%88%D8%A7%D9%84%D8%B5%D8%B1%D9%81%20%D8%A7%D9%84%D8%B5%D8%AD%D9%8A.pdf" target="_blank" rel="noopener noreferrer">دليل خدمات المياه والصرف الصحي</a> · <a href="https://www.sera.gov.sa/ar/consumer/electric-tariff/electric-tariff-categories/meter-reading-maintenance-and-billing-tariff" target="_blank" rel="noopener noreferrer">هيئة تنظيم الكهرباء (رسوم العداد السابقة)</a>.</p>
+      <p id="installTip">لإضافة التطبيق إلى شاشة الآيفون الرئيسية: افتح الرابط في سفاري، ثم اضغط <b>مشاركة</b> واختر <b>إضافة إلى الشاشة الرئيسية</b>. بعد تثبيته وفتحه مرة واحدة على اتصال بالإنترنت، يعمل الحساب أيضًا دون اتصال.</p>
+    </section>
+    <footer class="footer">
+      <div class="footer-rule"></div>
+      <span class="rights">جميع الحقوق محفوظة</span>
+      <span class="en">© 2026 — Programmed by Mamdouh Abdulkareem</span>
+      <span id="appVersion" class="app-version"></span>
+    </footer>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      // حدّث رقم الإصدار عند أي تعديل منشور لاحق: Major.Minor.Patch.
+      const APP_VERSION = '1.7.0';
+      $('appVersion').textContent = 'الإصدار ' + APP_VERSION;
+      const defaults = {waterMeter:40,waterUsage:17,units:1,sewer:true,breaker:50,electricUsage:1900,billDays:30};
+      const money = n => new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Math.round((n + Number.EPSILON)*100)/100)+' ر.س';
+      const justNum = n => new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Math.round((n + Number.EPSILON)*100)/100);
+      const toNumber = (n,fall=0,min=0,max=999999) => {const v=Number(n);return Number.isFinite(v)?Math.max(min,Math.min(max,v)):fall};
+      const getStored = () => {try {const x=JSON.parse(localStorage.getItem('water-energy-v1'));return x && typeof x==='object'?x:{}}catch {return {}}};
+      const state = {...defaults,...getStored()};
+      let toastTimer;
+      function notice(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500)}
+      const waterBracket = d => d<=20?{water:20,sewer:10,label:'حتى 20 ملم'}:d<=40?{water:40,sewer:20,label:'أكثر من 20 وحتى 40 ملم'}:d<=65?{water:60,sewer:30,label:'أكثر من 40 وحتى 65 ملم'}:d<=100?{water:80,sewer:40,label:'أكثر من 65 وحتى 100 ملم'}:{water:100,sewer:50,label:'أكثر من 100 ملم'};
+      const electricityBracket = a => a<100?{fee:70,label:'من 20 إلى أقل من 100 أمبير'}:a<200?{fee:80,label:'من 100 إلى أقل من 200 أمبير'}:a<300?{fee:90,label:'من 200 إلى أقل من 300 أمبير'}:{fee:100,label:'300 أمبير فأكثر'};
+      function calcWater(q,diameter,units,hasSewer){
+        const waterUse=Math.min(q,15)*1+Math.min(Math.max(q-15,0),15)*2+Math.min(Math.max(q-30,0),15)*4+Math.max(q-45,0)*6;
+        const bracket=waterBracket(diameter);
+        const sewerUse=hasSewer?waterUse*.5:0;
+        const fixedWater=bracket.water+(units-1)*20;
+        const fixedSewer=hasSewer?(bracket.sewer+(units-1)*10):0;
+        const subtotal=waterUse+sewerUse+fixedWater+fixedSewer;
+        const vat=subtotal*.15;
+        return {waterUse,sewerUse,fixedWater,fixedSewer,vat,total:subtotal+vat,bracket};
+      }
+      // التعرفة السابقة (حتى 2026): قرار مجلس الوزراء 95 لسنة 1437هـ ودليل خدمات المياه.
+      // القطران 21-24 و41-49 ملم غير واردين ضمن الفئات السابقة المنشورة، لذلك لا يُخمن رسمهما.
+      function oldWaterMeterFee(d) {
+        if (d<=20) return 5;
+        if (d>=25 && d<=40) return 10;
+        if (d>=50) return 15;
+        return null;
+      }
+      function oldWaterConsumption(q) {
+        return Math.min(q,15)*.10 + Math.min(Math.max(q-15,0),15)*1
+          + Math.min(Math.max(q-30,0),15)*3 + Math.min(Math.max(q-45,0),15)*4
+          + Math.max(q-60,0)*6;
+      }
+      function calcOldWater(q,diameter,units,hasSewer) {
+        const meterFee=oldWaterMeterFee(diameter);
+        if (meterFee===null) return null;
+        const waterUse=oldWaterConsumption(q/units)*units;
+        const sewerUse=hasSewer?waterUse*.5:0;
+        const subtotal=waterUse+sewerUse+meterFee;
+        return {waterUse,sewerUse,meterFee,total:subtotal*1.15};
+      }
+      // التعرفة السابقة للكهرباء: 18/30 هللة وتعرفة قراءة وصيانة العداد وإعداد الفاتورة.
+      function oldElectricityMeterFee(amps) {
+        return amps<100?10:amps<200?15:amps<300?21:amps<400?22:amps===400?25:30;
+      }
+      function calcOldElectric(q,amps,days) {
+        const use=Math.min(q,6000)*.18+Math.max(0,q-6000)*.30;
+        const fixed=oldElectricityMeterFee(amps)*days/30;
+        return {use,fixed,total:(use+fixed)*1.15};
+      }
+      function showDifference(labelId,valueId,difference){
+        $(labelId).textContent=difference>=-0.005?'الزيادة الشهرية المتوقعة':'الانخفاض الشهري المتوقع';
+        $(valueId).textContent=(difference>0?'+':difference<0?'−':'')+money(Math.abs(difference));
+      }
+      function calcElectric(q,amps,days){
+        const first=Math.min(q,6000)*.21;
+        const second=Math.max(0,q-6000)*.33;
+        const bracket=electricityBracket(amps);
+        const fixed=bracket.fee*days/30;
+        const subtotal=first+second+fixed;
+        const vat=subtotal*.15;
+        return {first,second,fixed,vat,total:subtotal+vat,bracket};
+      }
+      function updateSelect(id,customId,n){
+        const sel=$(id), custom=$(customId);
+        const match=[...sel.options].some(o=>o.value===String(n));
+        sel.value=match?String(n):'custom';
+        custom.hidden=match;
+        custom.value=match?'':n;
+      }
+      function showInputs(){
+        updateSelect('waterMeter','waterCustom',state.waterMeter);
+        updateSelect('breaker','breakerCustom',state.breaker);
+        $('waterUsage').value=Math.min(200,state.waterUsage);
+        $('waterUsageNumber').value=state.waterUsage;
+        $('electricUsage').value=Math.min(15000,state.electricUsage);
+        $('electricUsageNumber').value=state.electricUsage;
+        $('units').value=state.units;
+        $('sewer').checked=state.sewer;
+        $('billDays').value=state.billDays;
+      }
+      function recalc(){
+        state.waterMeter=toNumber(state.waterMeter,40,1,1000);
+        state.breaker=toNumber(state.breaker,50,20,10000);
+        state.waterUsage=toNumber(state.waterUsage,17,0,99999);
+        state.electricUsage=toNumber(state.electricUsage,1900,0,999999);
+        state.units=Math.round(toNumber(state.units,1,1,200));
+        state.billDays=Math.round(toNumber(state.billDays,30,1,365));
+        state.sewer=Boolean(state.sewer);
+        const w=calcWater(state.waterUsage,state.waterMeter,state.units,state.sewer);
+        const e=calcElectric(state.electricUsage,state.breaker,state.billDays);
+        const oldW=calcOldWater(state.waterUsage,state.waterMeter,state.units,state.sewer);
+        const oldE=calcOldElectric(state.electricUsage,state.breaker,state.billDays);
+        $('waterBracket').textContent='فئة الرسم الثابت: '+w.bracket.label;
+        $('breakerBracket').textContent='فئة الرسم الثابت: '+e.bracket.label;
+        $('unitsNote').hidden=state.units<=1;
+        document.querySelectorAll('.sewer-row').forEach(el=>el.hidden=!state.sewer);
+        $('waterUseCost').textContent=money(w.waterUse);
+        $('sewerUseCost').textContent=money(w.sewerUse);
+        $('waterFixed').textContent=money(w.fixedWater);
+        $('sewerFixed').textContent=money(w.fixedSewer);
+        $('waterVat').textContent=money(w.vat);
+        $('waterTotal').textContent=money(w.total);
+        $('elecTier1').textContent=money(e.first);
+        $('elecTier2').textContent=money(e.second);
+        $('elecFixed').textContent=money(e.fixed);
+        $('elecVat').textContent=money(e.vat);
+        $('elecTotal').textContent=money(e.total);
+        $('waterNewCompare').textContent=money(w.total);
+        $('elecNewCompare').textContent=money(e.total);
+        $('elecOldTotal').textContent=money(oldE.total);
+        showDifference('elecDiffLabel','elecIncrease',e.total-oldE.total);
+        if (oldW) {
+          $('waterOldTotal').textContent=money(oldW.total);
+          showDifference('waterDiffLabel','waterIncrease',w.total-oldW.total);
+          $('oldWaterNote').textContent=state.units>1
+            ?'قُدّر استهلاك كل وحدة بالتساوي للتعرفة السابقة، مع رسم عداد واحد وضريبة 15%.'
+            :'شامل الاستهلاك ورسم العداد السابق وضريبة 15%.';
+          $('grandOldTotal').textContent=money(oldW.total+oldE.total);
+          const diff=(w.total+e.total)-(oldW.total+oldE.total);
+          $('grandIncrease').textContent=(diff>=0?'+':'−')+money(Math.abs(diff));
+        } else {
+          $('waterOldTotal').textContent='غير متاح';
+          $('waterDiffLabel').textContent='فرق المبلغ';
+          $('waterIncrease').textContent='غير متاح';
+          $('oldWaterNote').textContent='لا توجد فئة منشورة للرسم السابق لهذا القطر؛ اختر مقاسًا قياسيًا.';
+          $('grandOldTotal').textContent='غير متاح';
+          $('grandIncrease').textContent='غير متاح';
+        }
+        $('grandTotal').innerHTML=justNum(w.total+e.total)+' <span class="currency">ر.س</span>';
+        $('waterSummary').textContent=money(w.total);
+        $('energySummary').textContent=money(e.total);
+        try{localStorage.setItem('water-energy-v1',JSON.stringify(state))}catch{}
+        return {w,e};
+      }
+      function bindNumber(inputId,key,{round=false,min=0,max=999999}={}){
+        const input=$(inputId);
+        input.addEventListener('input',()=>{
+          if(input.value==='') return;
+          let v=toNumber(input.value,state[key],min,max);
+          if(round) v=Math.round(v);
+          state[key]=v;
+          if(key==='waterUsage')$('waterUsage').value=Math.min(v,200);
+          if(key==='electricUsage')$('electricUsage').value=Math.min(v,15000);
+          recalc();
+        });
+        input.addEventListener('change',()=>{state[key]=toNumber(input.value,state[key],min,max);if(round)state[key]=Math.round(state[key]);input.value=state[key];recalc()});
+      }
+      function bindSize(selectId,customId,key,min){
+        $(selectId).addEventListener('change',e=>{
+          const custom=e.target.value==='custom';
+          $(customId).hidden=!custom;
+          if(custom){$(customId).value=state[key];$(customId).focus()}else{state[key]=Number(e.target.value);recalc()}
+        });
+        bindNumber(customId,key,{round:true,min,max:key==='waterMeter'?1000:10000});
+      }
+      bindSize('waterMeter','waterCustom','waterMeter',1);
+      bindSize('breaker','breakerCustom','breaker',20);
+      $('waterUsage').addEventListener('input',e=>{state.waterUsage=Number(e.target.value);$('waterUsageNumber').value=state.waterUsage;recalc()});
+      $('electricUsage').addEventListener('input',e=>{state.electricUsage=Number(e.target.value);$('electricUsageNumber').value=state.electricUsage;recalc()});
+      bindNumber('waterUsageNumber','waterUsage',{min:0,max:99999});
+      bindNumber('electricUsageNumber','electricUsage',{round:true,min:0,max:999999});
+      bindNumber('units','units',{round:true,min:1,max:200});
+      bindNumber('billDays','billDays',{round:true,min:1,max:365});
+      $('sewer').addEventListener('change',e=>{state.sewer=e.target.checked;recalc()});
+      $('resetBtn').addEventListener('click',()=>{Object.assign(state,defaults);showInputs();recalc();notice('تمت استعادة قيمك الافتراضية')});
+      showInputs();recalc();
+      if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+        window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+      }
+    })();
+  </script>
 </body>
 </html>
